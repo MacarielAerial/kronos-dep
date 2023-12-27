@@ -1,14 +1,14 @@
 [tool.poetry]
-name = "gaia"
+name = "kronos"
 version = "0.0.0"
-description = "Template repository for a python project"
+description = "Downloads arbitrary Google Sheet data and converts it into a database"
 authors = ["Yifei Yu"]
 readme = "README.md"
 packages = [
-    { include = "gaia", from = "src" }
+    { include = "kronos", from = "src" }
 ]
 include = [
-    { path = "src/gaia/conf_default", format = "sdist" },
+    { path = "src/kronos/conf_default", format = "sdist" },
     { path = "notebooks", format = "sdist" }
 ]
 
@@ -16,6 +16,10 @@ include = [
 python = "~3.10"
 orjson = "^3.9.10"
 dacite = "^1.8.1"
+gspread = "^5.12.3"
+python-dotenv = "^1.0.0"
+pandas = "^2.1.4"
+networkx = "^3.2.1"
 
 [tool.poetry.group.dev.dependencies]
 isort = "^5.13.2"
@@ -28,6 +32,10 @@ yamllint = "^1.33.0"
 semgrep = "^1.54.2"
 ipykernel = "^6.27.1"
 nbformat = "^5.9.2"
+
+
+[tool.poetry.group.vis.dependencies]
+plotly = "^5.18.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
