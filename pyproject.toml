@@ -33,6 +33,9 @@ yamllint = "^1.33.0"
 semgrep = "^1.54.2"
 ipykernel = "^6.27.1"
 nbformat = "^5.9.2"
+pandas-stubs = "^2.1.4.231227"
+types-networkx = "^3.1.0.20231220"
+types-tqdm = "^4.66.0.5"
 
 
 [tool.poetry.group.vis.dependencies]
@@ -79,7 +82,10 @@ warn_unused_ignores = true
 show_error_codes = true
 
 [[tool.mypy.overrides]]
-module = []
+module = [
+    "plotly.*",
+    "gspread,*"
+]
 ignore_missing_imports = true
 warn_return_any = false
 
