@@ -4,7 +4,7 @@ import networkx as nx
 import plotly.graph_objs as go
 
 
-def vis_layout_nx_g(G: nx.Graph) -> go.Figure:  # type: ignore[no-any-unimported]
+def vis_layout_nx_g(G: nx.DiGraph) -> go.Figure:  # type: ignore[no-any-unimported]
     """
     Visualizes the network using Plotly with improved node sizing, figure scaling,
     and reasonable figure dimensions.
