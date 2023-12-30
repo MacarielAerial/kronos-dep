@@ -30,7 +30,7 @@ def test_save() -> None:
         temp_file = Path(temp_dir) / "timetable.csv"
 
         interface = TimeTableDFDataInterface(temp_file)
-        
+
         # Timetable csv does not have meaningful index or header
         df = pd.DataFrame({0: ["row1", "row2"], 1: ["row3", "row4"]})
 
@@ -48,7 +48,7 @@ def test_load() -> None:
 
         # Timetable csv does not have meaningful index or header
         df = pd.DataFrame({0: ["row1", "row2"], 1: ["row3", "row4"]})
-        
+
         # Load method ignores indices and headers
         df.to_csv(temp_file, index=False, header=False)
 

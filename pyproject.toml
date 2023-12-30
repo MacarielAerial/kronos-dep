@@ -86,7 +86,8 @@ show_error_codes = true
 [[tool.mypy.overrides]]
 module = [
     "plotly.*",
-    "gspread,*"
+    "gspread,*",
+    "joblib.*"
 ]
 ignore_missing_imports = true
 warn_return_any = false
