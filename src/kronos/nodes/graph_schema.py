@@ -1,10 +1,12 @@
 from enum import Enum
+from typing import TypedDict
 
 
 class NodeAttrKey(str, Enum):
     ntype = "ntype"
     raw_text = "raw_text"
     ner = "ner"
+    nid_parent = "nid_parent"
 
 
 class EdgeAttrKey(str, Enum):
@@ -14,16 +16,18 @@ class EdgeAttrKey(str, Enum):
 
 
 class NodeType(str, Enum):
-    year = "Year"
-    month = "Month"
-    day_of_week = "DayOfWeek"
-    event = "Event"
+   event = "EVENT"
+   duration = "DURATION"
+   month_day = "MONTH_DAY"
+   year = "YEAR"
+   month = "MONTH"
+   day = "DAY"
+   day_of_week = "DAY_OF_WEEK"
+   loc = "LOC"
+   person = "PERSON"
+   time = "TIME"
+   other = "OTHER"
 
 
 class EdgeType(str, Enum):
     layout = "Layout"
-
-    # Date to Date edge types
-    year_to_month = "YearToMonth"
-    month_to_day_of_week = "MonthToDayOfWeek"
-    day_of_week_to_event = "DayOfWeekToEvent"

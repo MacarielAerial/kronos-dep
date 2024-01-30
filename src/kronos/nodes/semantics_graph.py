@@ -1,8 +1,9 @@
 import logging
 from collections import Counter
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import networkx as nx
+from networkx import DiGraph
 from spacy.language import Language
 
 from kronos.data_interfaces.ner_entities_data_interface import (
@@ -11,12 +12,6 @@ from kronos.data_interfaces.ner_entities_data_interface import (
     list_text_to_list_ner_entities,
 )
 from kronos.nodes.graph_schema import NodeAttrKey, NodeType
-from kronos.nodes.rule_based_linking.information_extraction import (
-    is_day_of_week_node,
-    is_event_node,
-    is_month_node,
-    is_year_node,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -52,51 +47,37 @@ def augment_nx_g_with_semantics(
 
     return nx_g
 
+def fine_grained_node_tuples_from_semantics_nx_g(semantics_nx_g: DiGraph) -> List[Tuple[Tuple[int, int, int], Dict[str, Any]]]:
+    list_fine_grained_node_tuples: List[Tuple[Tuple[int, int, int], Dict[str, Any]]] = []
 
-def collect_ntype_based_on_semantics(nx_g: nx.DiGraph) -> Dict[Any, str]:
-    ntypes: List[str] = [
-        NodeType.year.value,
-        NodeType.month.value,
-        NodeType.day_of_week.value,
-        NodeType.event.value,
-    ]
+    for nid, attrs in semantics_nx_g.nodes.data():
+        ner = attrs[NodeAttrKey.ner.value]
+        if len(ner) < 1:
+            # TODO: Encapsulate node tuple creation logic in a function
+            new_nid = tuple(list(nid) + [0])
+            ntype = NodeType.other.value
+            node_attrs = {NodeAttrKey.ntype.value: ntype,
+                          NodeAttrKey.raw_text.value: attrs[NodeAttrKey.raw_text.value]}
+            node_tuple = (new_nid, node_attrs)
+            list_fine_grained_node_tuples.append(node_tuple)
+            continue
+        
+        ner_ents = list_dict_to_ner_entities(list_dict=ner)
 
-    nid_to_ntype: Dict[Any, str] = {}
-    for nid in nx_g.nodes:
-        bools_ntype: List[bool] = [False] * len(ntypes)
+        for i, ner_ent in enumerate(ner_ents):
+            ntype = NodeType(ner_ent.label.value).value
+            raw_text = ner_ent.text
 
-        # Determine node type based on the node attributes
-        raw_text = nx_g.nodes[nid][NodeAttrKey.raw_text.value]
-        ner_entity_dicts = nx_g.nodes[nid][NodeAttrKey.ner.value]
-        ner_entities = list_dict_to_ner_entities(ner_entity_dicts)
+            # Assemble fine grained node tuple
+            new_nid = tuple(list(nid) + [i])  # nid is (x, y) coordinates of a dataframe
+            node_attrs = {NodeAttrKey.ntype.value: ntype, 
+                          NodeAttrKey.raw_text.value: raw_text,
+                          NodeAttrKey.nid_parent.value: nid}
+            node_tuple = (new_nid, node_attrs)
 
-        if is_year_node(raw_text):
-            bools_ntype[ntypes.index(NodeType.year.value)] = True
+            list_fine_grained_node_tuples.append(node_tuple)
+    
+    logger.info(f"{len(list_fine_grained_node_tuples)} fine grained node tuples "
+                "are parsed from NER output")
 
-        if is_month_node(raw_text, ner_entities):
-            bools_ntype[ntypes.index(NodeType.month.value)] = True
-
-        if is_day_of_week_node(raw_text):
-            bools_ntype[ntypes.index(NodeType.day_of_week.value)] = True
-
-        if is_event_node(raw_text, ner_entities):
-            bools_ntype[ntypes.index(NodeType.event.value)] = True
-
-        # Each node can only have one node type
-        if sum(bools_ntype) != 1:
-            raise ValueError(
-                f"Node {nid} with text {raw_text} with the following "
-                f"ner entities value: {ner_entity_dicts}\n"
-                f"has {sum(bools_ntype)} ntypes. Here's its node type data "
-                f"{dict(zip(ntypes, bools_ntype))}"
-            )
-        else:
-            ntype = ntypes[bools_ntype.index(True)]
-            nid_to_ntype[nid] = ntype
-
-    logger.info(
-        "Frequency distribution of the inferred node types: "
-        f"{Counter(nid_to_ntype.values())}"
-    )
-
-    return nid_to_ntype
+    return list_fine_grained_node_tuples

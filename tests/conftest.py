@@ -21,6 +21,10 @@ class TestDataPaths:
     @property
     def path_timetable(self) -> Path:
         return self.path_dir_data / "mock_timetable.csv"
+    
+    @property
+    def path_service_account_json(self) -> Path:
+        return self.path_dir_data / "mock_service_account_json.json"
 
     # Test output data paths
 

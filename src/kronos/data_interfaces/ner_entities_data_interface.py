@@ -13,23 +13,16 @@ logger = logging.getLogger(__name__)
 
 
 class NERLabel(str, Enum):
-    date = "DATE"
-    event = "EVENT"
-    loc = "LOC"
-    person = "PERSON"
-    role = "ROLE"
-    time = "TIME"
-
-    # Subtypes of DATE which are produced by Matcher instead of NER
-    year = "YEAR"
-    month = "MONTH"
-    day_of_week = "DAY_OF_WEEK"
-    month_day = "MONTH_DAY"
-    day_month = "DAY_MONTH"
-    duration = "DURATION"
-    day_of_month = "DAY_OF_MONTH"
-    special_date = "SPECIAL_DATE"
-    remove = "REMOVE"
+   event = "EVENT"
+   duration = "DURATION"
+   month_day = "MONTH_DAY"
+   year = "YEAR"
+   month = "MONTH"
+   day = "DAY"
+   day_of_week = "DAY_OF_WEEK"
+   loc = "LOC"
+   person = "PERSON"
+   time = "TIME" 
 
 
 @dataclass

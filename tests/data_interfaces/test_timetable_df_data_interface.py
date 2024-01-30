@@ -7,8 +7,10 @@ import pandas as pd
 
 from kronos.data_interfaces.timetable_df_data_interface import TimeTableDFDataInterface
 
+from tests.conftest import TestDataPaths
 
-def test_download() -> None:
+
+def test_download(test_data_paths: TestDataPaths) -> None:
     mock_gc = Mock()
     mock_sheet = Mock()
     mock_gc.open_by_key.return_value.get_worksheet.return_value = mock_sheet
@@ -19,7 +21,7 @@ def test_download() -> None:
 
         with patch("gspread.service_account", return_value=mock_gc):
             interface = TimeTableDFDataInterface(temp_file)
-            df = interface.download()
+            df = interface.download(test_data_paths.path_service_account_json)
 
             assert not df.empty
             assert df.shape == (2, 2)  # Adjust based on expected shape
