@@ -1,5 +1,6 @@
 from pathlib import Path
 
+import logging
 import orjson
 import spacy
 from spacy.tokens import DocBin
@@ -7,18 +8,22 @@ from tqdm import tqdm
 
 from kronos.pipelines.split_ner_annotations import NERAnnotations
 
+logger = logging.getLogger(__name__)
 nlp = spacy.blank("en")
 
 
 def create_training(TRAIN_DATA: NERAnnotations) -> DocBin:
     db = DocBin()
-    for text, annot in tqdm(TRAIN_DATA["annotations"]):
+    for entry in tqdm(TRAIN_DATA["annotations"]):
+        text = entry[0]
+        annot = entry[1]
         doc = nlp.make_doc(text)
         ents = []
         for start, end, label in annot["entities"]:
             span = doc.char_span(start, end, label=label, alignment_mode="contract")
             if span is None:
-                print("Skipping entity")
+                logger.warning(f"Skipped entity {label} for the following text:\n"
+                               f"{doc[start:end]} in text {text}")
             else:
                 ents.append(span)
         doc.ents = ents

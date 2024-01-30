@@ -18,10 +18,10 @@ class TimeTableDFDataInterface:
     def __init__(self, filepath: Path) -> None:
         self.filepath = filepath
 
-    def download(self) -> DataFrame:
+    def download(self, path_service_account_json: Path) -> DataFrame:
         load_dotenv()
 
-        gc = gspread.service_account()
+        gc = gspread.service_account(filename=path_service_account_json)
         google_sheet = gc.open_by_key(os.getenv(self.ENV_KEY)).get_worksheet(0)
         list_of_lists: List[List[Any]] = google_sheet.get_values()
 

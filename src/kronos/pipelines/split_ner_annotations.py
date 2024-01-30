@@ -28,10 +28,19 @@ def split_ner_annotations(
             f"{ner_annotations.keys()} and has "
             f"{len(ner_annotations['annotations'])} annotations"
         )
+    
+    # TODO: Separate data validation into its own class
+    indices_to_drop = []
+    for i in range(len(ner_annotations["annotations"])):
+        if ner_annotations["annotations"][i] is None:
+            indices_to_drop.append(i)
+    ner_annotations["annotations"] = [annot for i, annot in enumerate(ner_annotations["annotations"]) if i not in indices_to_drop]
+
+    logger.warning(f"{len(indices_to_drop)} annotation entries are invalid and are removed")
 
     # Task Processing
     random.shuffle(ner_annotations["annotations"])
-    split_index = int(len(ner_annotations["annotations"]) * 0.8)
+    split_index = int(len(ner_annotations["annotations"]) * sample_proportion)
 
     train = ner_annotations["annotations"][:split_index]
     dev = ner_annotations["annotations"][split_index:]
